@@ -1,82 +1,100 @@
 import React, { Component } from 'react';
+
 //import logo from './logo.svg';
 import './App.css';
-import $ from 'jquery'; 
 import YouTube from 'react-youtube';
 
+import ChartPlayer from './ChartPlayer.jsx'
 import goblue from './goblue.txt';
 
-//console.log(goblue);
-// const client = new XMLHttpRequest();
-// client.open('GET', goblue);
-// client.onreadystatechange = () => {
-//   console.log(client.responseText);
-// }
-// client.send();
+function getChart(cb) {
+  const client = new XMLHttpRequest();
+  client.open('GET', goblue);
+  client.onreadystatechange = () => {
+    cb(client.responseText);
+  }
+  client.send();
+}
+
+const ytOpts = {
+  height: '360',
+  width: '640',
+  playerVars: { // https://developers.google.com/youtube/player_parameters
+    autoplay: 0,
+    controls: 0,
+    showinfo: 0,
+    rel: 0,
+    modestbranding: 1,
+  },
+};
 
 class App extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
       status: 'Loading',
-      start_time: null,
+      setIntervalId: null,
+      startTime: null,
+      currentTime: 0,
       chart: null
     };
 
-    $.get(goblue, (data) => {
+    getChart((data) => {
       const chart = data.split('\n').map((s) => {
         return parseInt(s, 10);
       });
-      this.setState({chart: chart});
+      this.setState({ chart: chart });
     });
   }
 
   render() {
-    const opts = {
-      height: '360',
-      width: '640',
-      playerVars: { // https://developers.google.com/youtube/player_parameters
-        autoplay: 0,
-        controls: 0,
-        showinfo: 0,
-        rel: 0,
-        modestbranding: 1,
-      },
-    };
-
     return (
       <div className='App'>
         <div className='App-youtube-frame'>
           <YouTube
             videoId="mURDwg_wilE"
-            opts={opts}
+            opts={ytOpts}
             onReady={this.onPlayerReady}
             onStateChange={this.onPlayerStateChange}
           />
         </div>
-        <Status text={this.state.status}/>
-        <div className='App-actions'>
-        </div>
+        <Status text={this.state.status} />
+        <ChartPlayer currentTime={this.state.currentTime} />
       </div>
     );
   }
+
+  updateFrame = () => {
+    const currentDate = new Date();
+    const elapsedTime = currentDate.getTime() - this.state.startTime.getTime();
+    this.setState({
+      currentTime: elapsedTime,
+    });
+  };
 
   onPlayerReady = (event) => {
     this.setState({
       status: 'Ready',
     })
-  }
+  };
 
   onPlayerStateChange = (event) => {
     console.log(event);
+    // play
     if (event.data === 1) {
       this.setState({
         status: 'Playing',
-        start_time: new Date(),
+        startTime: new Date(),
+        setIntervalId: setInterval(this.updateFrame, 20),
       });
-    } else if (event.data === 0) {
+    } else if (event.data === 0 || event.data === 2) {
+      const id = this.state.setIntervalId;
+      const status = event.data === 0? 'End': 'Puase';
+      if (id) { clearInterval(id); }
       this.setState({
-        status: 'End',
+        status: status,
+        setIntervalId: null,
       });
     }
   };
@@ -85,7 +103,7 @@ class App extends Component {
 function Status(props) {
   return (
     <div>
-      {props.text}
+      <h1>{props.text}</h1>
     </div>
   );
 }
