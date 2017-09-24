@@ -6,7 +6,9 @@
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-scripts": "1.0.13",
-    "react-youtube": "^7.4.0"
+    "react-vtt": "^0.2.3",
+    "react-youtube": "^7.4.0",
+    "webpack": "^3.6.0"
   },
   "scripts": {
     "start": "react-scripts start",
