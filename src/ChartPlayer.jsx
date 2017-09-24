@@ -12,6 +12,9 @@ class ChartPlayer extends Component {
   //     this.props.endAnimation();
   //   }
   // }
+  constructor(props) {
+    super(props);
+  }
 
   static childContextTypes = {
     reactIconBase: PropTypes.object
@@ -27,9 +30,16 @@ class ChartPlayer extends Component {
   }
 
   render() {
+    let actions = [];
+    if (this.props.chart && this.props.currentTime) {
+      const current = this.props.currentTime;
+      actions = this.props.chart.filter((t) => {
+        return t - current <= 2000 && t - current >= 100;
+      });
+    }
     return (
       <div>
-        <TiArrowUpThick /> {this.props.currentTime}
+        <TiArrowUpThick /> {actions.join()}
       </div>
     );
   }

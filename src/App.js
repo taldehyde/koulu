@@ -21,7 +21,7 @@ const ytOpts = {
   width: '640',
   playerVars: { // https://developers.google.com/youtube/player_parameters
     autoplay: 0,
-    controls: 0,
+    controls: 1,
     showinfo: 0,
     rel: 0,
     modestbranding: 1,
@@ -60,7 +60,10 @@ class App extends Component {
           />
         </div>
         <Status text={this.state.status} />
-        <ChartPlayer currentTime={this.state.currentTime} />
+        <ChartPlayer
+          currentTime={this.state.currentTime}
+          chart={this.state.chart}
+        />
       </div>
     );
   }
@@ -81,6 +84,7 @@ class App extends Component {
 
   onPlayerStateChange = (event) => {
     console.log(event);
+    const player = event.target;
     // play
     if (event.data === 1) {
       this.setState({
@@ -88,13 +92,15 @@ class App extends Component {
         startTime: new Date(),
         setIntervalId: setInterval(this.updateFrame, 20),
       });
-    } else if (event.data === 0 || event.data === 2) {
+    } else if (event.data === 2 || event.data === 0) {
       const id = this.state.setIntervalId;
-      const status = event.data === 0? 'End': 'Puase';
       if (id) { clearInterval(id); }
+      player.seekTo(0);
+      player.pauseVideo();      
       this.setState({
-        status: status,
+        status: 'Ready',
         setIntervalId: null,
+        startTime: null
       });
     }
   };
