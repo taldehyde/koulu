@@ -21,7 +21,7 @@ const ytOpts = {
   width: '640',
   playerVars: { // https://developers.google.com/youtube/player_parameters
     autoplay: 0,
-    controls: 1,
+    controls: 0,
     showinfo: 0,
     rel: 0,
     modestbranding: 1,
@@ -109,7 +109,7 @@ class App extends Component {
 function Status(props) {
   return (
     <div>
-      <h1>{props.text}</h1>
+      <h2>{props.text}</h2>
     </div>
   );
 }
