@@ -1,8 +1,18 @@
 import React, { Component } from 'react';
 //import logo from './logo.svg';
 import './App.css';
-
+import $ from 'jquery'; 
 import YouTube from 'react-youtube';
+
+import goblue from './goblue.txt';
+
+//console.log(goblue);
+// const client = new XMLHttpRequest();
+// client.open('GET', goblue);
+// client.onreadystatechange = () => {
+//   console.log(client.responseText);
+// }
+// client.send();
 
 class App extends Component {
   constructor(props) {
@@ -10,7 +20,15 @@ class App extends Component {
     this.state = {
       status: 'Loading',
       start_time: null,
+      chart: null
     };
+
+    $.get(goblue, (data) => {
+      const chart = data.split('\n').map((s) => {
+        return parseInt(s, 10);
+      });
+      this.setState({chart: chart});
+    });
   }
 
   render() {
